@@ -2,7 +2,7 @@
   "name": "ai-code-reviewer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
     "build": "ncc build src/main.js -o dist"
   },
