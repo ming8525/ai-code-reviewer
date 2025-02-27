@@ -1,8 +1,8 @@
-const { readFileSync } = require("fs");
-const core = require("@actions/core");
-const OpenAI = require("openai");
-const { Octokit } = require("@octokit/rest");
-const parseDiff = require("parse-diff");
+const { readFileSync } = require("fs")
+const core = require("@actions/core")
+const OpenAI = require("openai")
+const { Octokit } = require("@octokit/rest")
+const parseDiff = require("parse-diff")
 const { minimatch } = require('minimatch')
 
 
@@ -10,6 +10,7 @@ const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
 const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY")
 const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL")
 const EXCLUDE_FILES = core.getInput("EXCLUDE_FILES")
+const MAX_ALLOWED_LINES = core.getInput("MAX_ALLOWED_LINES")
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN })
 
@@ -203,6 +204,7 @@ async function main() {
   }
 
   const parsedDiff = parseDiff(diff)
+
   const excludePatterns = EXCLUDE_FILES.split(",")
     .map((s) => s.trim())
 
@@ -212,11 +214,26 @@ async function main() {
     )
   })
 
-  console.log('diff length', filteredDiff.length)
-  console.log('diff', filteredDiff)
+  const changedLines = filteredDiff.reduce((total, file) => {
+    return total + file.chunks.reduce((chunkTotal, chunk) => {
+      return chunkTotal + chunk.changes.length
+    }, 0)
+  }, 0)
 
-  const comments = []
-  // const comments = await analyzeCode(filteredDiff, prDetails)
+  if (changedLines > (MAX_ALLOWED_LINES || 200)) {
+    console.log(`Skipping review: PR contains ${changedLines} changed lines, which exceeds the limit of ${MAX_ALLOWED_LINES}.`)
+    
+    await octokit.issues.createComment({
+      owner: prDetails.owner,
+      repo: prDetails.repo,
+      issue_number: prDetails.pull_number,
+      body: `⚠️ This PR contains **${changedLines}** changed lines, exceeding the limit of **${MAX_ALLOWED_LINES}** for automated review. Please consider breaking it into smaller PRs for better review.`
+    })
+
+    return
+  }
+
+  const comments = await analyzeCode(filteredDiff, prDetails)
   if (comments.length > 0) {
     await createReviewComment(
       prDetails.owner,
