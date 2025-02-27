@@ -47841,7 +47841,7 @@ async function getPRDetails() {
   }
 }
 
-async function getDiff(owner,repo,pull_number) {
+async function getDiff(owner, repo, pull_number) {
   const response = await octokit.pulls.get({
     owner,
     repo,
@@ -47882,9 +47882,8 @@ function createPrompt(file, chunk, prDetails) {
 - Use the given description only for the overall context and only comment the code.
 - IMPORTANT: NEVER suggest adding comments to the code.
 
-Review the following code diff in the file "${
-    file.to
-  }" and take the pull request title and description into account when writing the response.
+Review the following code diff in the file "${file.to
+    }" and take the pull request title and description into account when writing the response.
   
 Pull request title: ${prDetails.title}
 Pull request description:
@@ -47898,8 +47897,8 @@ Git diff to review:
 \`\`\`diff
 ${chunk.content}
 ${chunk.changes
-  .map((c) => `${c.ln ? c.ln : c.ln2} ${c.content}`)
-  .join("\n")}
+      .map((c) => `${c.ln ? c.ln : c.ln2} ${c.content}`)
+      .join("\n")}
 \`\`\`
 `
 }
@@ -47971,6 +47970,15 @@ async function createReviewComment(
 
 async function main() {
   const prDetails = await getPRDetails()
+
+  const isFormattingPR = /format|prettier|style/i.test(prDetails.title) ||
+    /format|prettier|style/i.test(prDetails.description);
+
+  if (isFormattingPR) {
+    console.log("Skipping review: This PR appears to be only code formatting.");
+    return;
+  }
+
   let diff
   const eventData = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH ?? "", "utf8")
@@ -48026,7 +48034,7 @@ async function main() {
 
   if (changedLines > (MAX_ALLOWED_LINES || 200)) {
     console.log(`Skipping review: PR contains ${changedLines} changed lines, which exceeds the limit of ${MAX_ALLOWED_LINES}.`)
-    
+
     await octokit.issues.createComment({
       owner: prDetails.owner,
       repo: prDetails.repo,
