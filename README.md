@@ -60,5 +60,5 @@ the OpenAI API. It then generates review comments based on the AI's response and
 
 ## License
 
-This project includes code from [Original Repo Name] (https://github.com/aidar-freeed/ai-codereviewer),
+This project includes code from [ai-codereviewer] (https://github.com/aidar-freeed/ai-codereviewer),
 originally licensed under the MIT License.
