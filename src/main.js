@@ -3,7 +3,7 @@ const core = require("@actions/core");
 const OpenAI = require("openai");
 const { Octokit } = require("@octokit/rest");
 const parseDiff = require("parse-diff");
-const minimatch = require("minimatch");
+const { minimatch } = require('minimatch')
 
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
@@ -18,7 +18,6 @@ const openai = new OpenAI({
 })
 
 
-//Learn from https://github.com/aidar-freeed/ai-codereviewer
 async function getPRDetails() {
   const { repository, number } = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")

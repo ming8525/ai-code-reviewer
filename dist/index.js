@@ -47807,7 +47807,7 @@ const core = __nccwpck_require__(7484);
 const OpenAI = __nccwpck_require__(2583);
 const { Octokit } = __nccwpck_require__(9380);
 const parseDiff = __nccwpck_require__(2673);
-const minimatch = __nccwpck_require__(6507);
+const { minimatch } = __nccwpck_require__(6507)
 
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
@@ -47822,7 +47822,6 @@ const openai = new OpenAI({
 })
 
 
-//Learn from https://github.com/aidar-freeed/ai-codereviewer
 async function getPRDetails() {
   const { repository, number } = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH || "", "utf8")
