@@ -203,7 +203,6 @@ async function main() {
   }
 
   const parsedDiff = parseDiff(diff)
-
   const excludePatterns = EXCLUDE_FILES.split(",")
     .map((s) => s.trim())
 
@@ -213,7 +212,11 @@ async function main() {
     )
   })
 
-  const comments = await analyzeCode(filteredDiff, prDetails)
+  console.log('diff length', filteredDiff.length)
+  console.log('diff', filteredDiff)
+
+  const comments = []
+  // const comments = await analyzeCode(filteredDiff, prDetails)
   if (comments.length > 0) {
     await createReviewComment(
       prDetails.owner,
