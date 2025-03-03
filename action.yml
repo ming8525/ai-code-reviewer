@@ -19,6 +19,10 @@ inputs:
     description: "Maximum number of lines allowed to be changed"
     required: false
     default: 200
+  MAX_RETURNED_COMMENTS:
+    description: "Maximum number of comments to return"
+    required: false
+    default: 10
 runs:
   using: "node20"
   main: "dist/index.js"

@@ -11,6 +11,7 @@ const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY")
 const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL")
 const EXCLUDE_FILES = core.getInput("EXCLUDE_FILES")
 const MAX_ALLOWED_LINES = core.getInput("MAX_ALLOWED_LINES")
+const MAX_RETURNED_COMMENTS = core.getInput("MAX_RETURNED_COMMENTS")
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN })
 
@@ -49,14 +50,15 @@ async function getDiff(owner, repo, pull_number) {
 
 async function analyzeCode(
   parsedDiff,
-  prDetails
+  prDetails,
+  maxComments
 ) {
   const comments = []
 
   for (const file of parsedDiff) {
     if (file.to === "/dev/null") continue // Ignore deleted files
     for (const chunk of file.chunks) {
-      const prompt = createPrompt(file, chunk, prDetails)
+      const prompt = createPrompt(file, chunk, prDetails, maxComments)
       const aiResponse = await getAIResponse(prompt)
       if (aiResponse) {
         const newComments = createComment(file, chunk, aiResponse)
@@ -69,13 +71,14 @@ async function analyzeCode(
   return comments
 }
 
-function createPrompt(file, chunk, prDetails) {
+function createPrompt(file, chunk, prDetails, maxComments = 10) {
   return `Your task is to review pull requests. Instructions:
 - Provide the response in following JSON format:  {"reviews": [{"lineNumber":  <line_number>, "reviewComment": "<review comment>"}]}
 - Do not give positive comments or compliments.
 - Provide comments and suggestions ONLY if there is something to improve, otherwise "reviews" should be an empty array.
 - Write the comment in GitHub Markdown format.
 - Use the given description only for the overall context and only comment the code.
+- If there are more than ${maxComments} comments, prioritize the most critical ones and return only the top ${maxComments}.
 - IMPORTANT: NEVER suggest adding comments to the code.
 
 Review the following code diff in the file "${file.to
@@ -241,7 +244,7 @@ async function main() {
     return
   }
 
-  const comments = await analyzeCode(filteredDiff, prDetails)
+  const comments = await analyzeCode(filteredDiff, prDetails, MAX_RETURNED_COMMENTS)
   if (comments.length > 0) {
     await createReviewComment(
       prDetails.owner,
