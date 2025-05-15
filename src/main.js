@@ -27,6 +27,9 @@ if (USE_AZURE) {
   if(!AZURE_API_VERSION){
     throw new Error("Azure API version is required when `USE_AZURE` is true.")
   }
+  console.log('AZURE_ENDPOINT', AZURE_ENDPOINT)
+  console.log('AZURE_API_VERSION', AZURE_API_VERSION)
+  console.log('OPENAI_API_KEY', OPENAI_API_KEY)
   openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY })
 } else {
   openai = new OpenAI({ apiKey: OPENAI_API_KEY })
