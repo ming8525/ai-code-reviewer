@@ -20,7 +20,7 @@ inputs:
     description: "OpenAI API key for GPT."
     required: true
   OPENAI_API_MODEL:
-    description: "OpenAI API model."
+    description: "OpenAI API model name or Azure model deployment name."
     required: false
     default: "gpt-4"
   EXCLUDE_FILES:

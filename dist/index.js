@@ -47810,7 +47810,6 @@ const { Octokit } = __nccwpck_require__(9380)
 const parseDiff = __nccwpck_require__(2673)
 const { minimatch } = __nccwpck_require__(6507)
 
-
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
 const USE_AZURE = core.getInput("USE_AZURE")
 const AZURE_ENDPOINT = core.getInput("AZURE_ENDPOINT")
@@ -47828,7 +47827,7 @@ if (USE_AZURE) {
   if (!AZURE_ENDPOINT) {
     throw new Error("Azure endpoint is required when `USE_AZURE` is true.")
   }
-  if(!AZURE_API_VERSION){
+  if (!AZURE_API_VERSION) {
     throw new Error("Azure API version is required when `USE_AZURE` is true.")
   }
   openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY })
@@ -47920,14 +47919,13 @@ ${chunk.changes
 
 async function getAIResponse(prompt) {
   const queryConfig = {
-    model: OPENAI_API_MODEL,
     temperature: 0.2,
     max_tokens: 700,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
+    model: OPENAI_API_MODEL
   }
-
   try {
     const response = await openai.chat.completions.create({
       ...queryConfig,
