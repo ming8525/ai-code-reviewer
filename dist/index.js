@@ -47930,7 +47930,8 @@ async function getAIResponse(prompt) {
       }
       : { model: OPENAI_API_MODEL }
   }
-  core.info("Query config:", JSON.stringify(queryConfig, null, 2))
+  core.info("Query config:")
+  core.info( JSON.stringify(queryConfig, null, 2))
   try {
     const response = await openai.chat.completions.create({
       ...queryConfig,
