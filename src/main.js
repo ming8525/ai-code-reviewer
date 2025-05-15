@@ -26,9 +26,7 @@ if (USE_AZURE) {
   if (!AZURE_API_VERSION) {
     throw new Error("Azure API version is required when `USE_AZURE` is true.")
   }
-  core.info("endpoint:")
-  core.info(AZURE_ENDPOINT + `/${OPENAI_API_MODEL}`)
-  openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT + `/${OPENAI_API_MODEL}`, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY, dangerouslyAllowBrowser: true })
+  openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY, dangerouslyAllowBrowser: true })
 } else {
   openai = new OpenAI({ apiKey: OPENAI_API_KEY })
 }
@@ -122,14 +120,8 @@ async function getAIResponse(prompt) {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
-    ...USE_AZURE
-      ? {
-        deployment: OPENAI_API_MODEL,
-      }
-      : { model: OPENAI_API_MODEL }
+    model: OPENAI_API_MODEL
   }
-  core.info("Query config:")
-  core.info( JSON.stringify(queryConfig, null, 2))
   try {
     const response = await openai.chat.completions.create({
       ...queryConfig,
