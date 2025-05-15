@@ -4,6 +4,18 @@ inputs:
   GITHUB_TOKEN:
     description: "GitHub token to interact with the repository."
     required: true
+  USE_AZURE:
+    description: "Whether use AzureOpenAI of the OpenAI class."
+    required: false
+    default: false
+  AZURE_ENDPOINT:
+    description: "The endpoint used for AzureOpenAI."
+    required: false
+    default: ""
+  AZURE_API_VERSION:
+    description: "The API version used for AzureOpenAI."
+    required: false
+    default: ""
   OPENAI_API_KEY:
     description: "OpenAI API key for GPT."
     required: true
