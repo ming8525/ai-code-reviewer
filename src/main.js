@@ -138,8 +138,6 @@ async function getAIResponse(prompt) {
     })
 
     const res = response.choices[0].message?.content?.trim() || "{}"
-    core.info("AI Response: ")
-    core.info(res)
     return JSON.parse(res).reviews
   } catch (error) {
     console.error("Error:", error)
