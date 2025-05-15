@@ -5,7 +5,7 @@ const { AzureOpenAI } = require("openai")
 const { Octokit } = require("@octokit/rest")
 const parseDiff = require("parse-diff")
 const { minimatch } = require('minimatch')
-
+const core = require('@actions/core')
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
 const USE_AZURE = core.getInput("USE_AZURE")
@@ -127,7 +127,7 @@ async function getAIResponse(prompt) {
       }
       : { model: OPENAI_API_MODEL }
   }
-
+  core.info("Query config:", JSON.stringify(queryConfig, null, 2))
   try {
     const response = await openai.chat.completions.create({
       ...queryConfig,
