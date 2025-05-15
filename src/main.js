@@ -5,7 +5,6 @@ const { AzureOpenAI } = require("openai")
 const { Octokit } = require("@octokit/rest")
 const parseDiff = require("parse-diff")
 const { minimatch } = require('minimatch')
-const core = require('@actions/core')
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
 const USE_AZURE = core.getInput("USE_AZURE")
