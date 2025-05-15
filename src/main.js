@@ -26,7 +26,7 @@ if (USE_AZURE) {
   if (!AZURE_API_VERSION) {
     throw new Error("Azure API version is required when `USE_AZURE` is true.")
   }
-  openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY, dangerouslyAllowBrowser: true })
+  openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT + `/${OPENAI_API_MODEL}`, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY, dangerouslyAllowBrowser: true })
 } else {
   openai = new OpenAI({ apiKey: OPENAI_API_KEY })
 }
