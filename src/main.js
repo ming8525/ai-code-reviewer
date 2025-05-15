@@ -1,12 +1,16 @@
 const { readFileSync } = require("fs")
 const core = require("@actions/core")
 const OpenAI = require("openai")
+const { AzureOpenAI } = require("openai")
 const { Octokit } = require("@octokit/rest")
 const parseDiff = require("parse-diff")
 const { minimatch } = require('minimatch')
 
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN")
+const USE_AZURE = core.getInput("USE_AZURE")
+const AZURE_ENDPOINT = core.getInput("AZURE_API_VERSION")
+const AZURE_API_VERSION = core.getInput("AZURE_ENDPOINT")
 const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY")
 const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL")
 const EXCLUDE_FILES = core.getInput("EXCLUDE_FILES")
@@ -15,10 +19,18 @@ const MAX_RETURNED_COMMENTS = core.getInput("MAX_RETURNED_COMMENTS")
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN })
 
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-})
-
+let openai
+if (USE_AZURE) {
+  if (!AZURE_ENDPOINT) {
+    throw new Error("Azure endpoint is required when `USE_AZURE` is true.")
+  }
+  if(!AZURE_API_VERSION){
+    throw new Error("Azure API version is required when `USE_AZURE` is true.")
+  }
+  openai = new AzureOpenAI({ endpoint: AZURE_ENDPOINT, apiVersion: AZURE_API_VERSION, apiKey: OPENAI_API_KEY })
+} else {
+  openai = new OpenAI({ apiKey: OPENAI_API_KEY })
+}
 
 async function getPRDetails() {
   const { repository, number } = JSON.parse(
